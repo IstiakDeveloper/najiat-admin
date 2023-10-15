@@ -7,7 +7,13 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\OrderController;
-
+use App\Http\Controllers\Pos\AccountController;
+use App\Http\Controllers\Pos\BuyTransactionController;
+use App\Http\Controllers\Pos\ExpenseController;
+use App\Http\Controllers\Pos\FinancialOverviewController;
+use App\Http\Controllers\Pos\InvestmentController;
+use App\Http\Controllers\Pos\SellTransactionController;
+use App\Http\Controllers\Pos\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +54,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
     Route::resource('orders', OrderController::class);
+
+    Route::resource('investments', InvestmentController::class);
+    Route::resource('expenses', ExpenseController::class);
+    Route::resource('accounts', AccountController::class);
+
+    Route::get('financial-overview', [FinancialOverviewController::class, 'index'])->name('financial-overview');
+    Route::get('/financial-overview-filter', [FinancialOverviewController::class, 'indexWithFilter'])->name('financial-overview.index');
+
+    // Routes for Buy Transactions
+    Route::get('buy-transactions', [BuyTransactionController::class, 'index'])->name('buy-transactions.index');
+    Route::get('buy-transactions/create', [BuyTransactionController::class, 'create'])->name('buy-transactions.create');
+    Route::post('buy-transactions', [BuyTransactionController::class, 'store'])->name('buy-transactions.store');
+
+    // Routes for Sell Transactions
+    Route::get('sell-transactions', [SellTransactionController::class, 'index'])->name('sell-transactions.index');
+    Route::get('sell-transactions/create', [SellTransactionController::class, 'create'])->name('sell-transactions.create');
+    Route::post('sell-transactions', [SellTransactionController::class, 'store'])->name('sell-transactions.store');
+
+
+
+
 
 });
 
