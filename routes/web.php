@@ -58,6 +58,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('investments', InvestmentController::class);
     Route::resource('expenses', ExpenseController::class);
     Route::resource('accounts', AccountController::class);
+    Route::post('/accounts/recharge', [AccountController::class, 'recharge'])
+    ->name('accounts.recharge');
 
     Route::get('financial-overview', [FinancialOverviewController::class, 'index'])->name('financial-overview');
     Route::get('/financial-overview-filter', [FinancialOverviewController::class, 'indexWithFilter'])->name('financial-overview.index');

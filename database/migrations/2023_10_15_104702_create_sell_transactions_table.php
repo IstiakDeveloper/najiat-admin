@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('buy_transactions', function (Blueprint $table) {
+        Schema::create('sell_transactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('account_id');
+            $table->string('from');
             $table->decimal('amount', 10, 2);
             $table->timestamps();
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('buy_transactions');
+        Schema::dropIfExists('sell_transactions');
     }
 };

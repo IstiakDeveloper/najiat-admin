@@ -1,6 +1,56 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Style for the recharge button */
+.recharge-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+</style>
 <div class="container mx-auto p-6">
     <h2 class="text-2xl mb-4">Accounts</h2>
     <div class="flex mb-4 justify-between">
@@ -20,6 +70,11 @@
                     <i class="fa fa-list"></i> Accounts
                 </button>
             </a>
+        </div>
+        <div>
+
+                <button onclick="showRechargeModal()" class="recharge-button">Transfer</button>
+
         </div>
 
     </div>
@@ -41,8 +96,71 @@
             @endforeach
         </tbody>
     </table>
+
     <a href="{{ route('accounts.create') }}" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
         <i class="fa fa-plus"></i> Add Account
     </a>
 </div>
+
+
+<!-- Recharge Modal -->
+<div id="rechargeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeRechargeModal()">&times;</span>
+        <h2 class="text-center">Recharge Account</h2>
+
+        <form id="rechargeForm" action="{{ route('accounts.recharge') }}" method="POST">
+            @csrf
+
+            <div class="form-group">
+                <label for="rechargeSourceAccount">Source Account:</label>
+                <select id="rechargeSourceAccount" name="source_account_id" class="form-control" required>
+                    @foreach ($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rechargeTargetAccount">Select Account to Recharge:</label>
+                <select id="rechargeTargetAccount" name="account_id" class="form-control" required>
+                    @foreach ($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rechargeAmount">Recharge Amount:</label>
+                <input type="number" id="rechargeAmount" name="amount" min="0" class="form-control" required>
+            </div>
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <button type="submit" class="btn btn-primary">Recharge</button>
+        </form>
+
+    </div>
+</div>
+
+
+<script>
+    function showRechargeModal() {
+        document.getElementById('rechargeModal').style.display = 'block';
+    }
+
+    function closeRechargeModal() {
+        document.getElementById('rechargeModal').style.display = 'none';
+    }
+
+</script>
+
 @endsection

@@ -142,6 +142,8 @@ class FinancialOverviewController extends Controller
             'investments' => $investments,
             'totalBuy' => $totalBuy,
             'totalSell' => $totalSell,
+            'buy_transactions' => $buy_transactions,
+            'sell_transactions' => $sell_transactions,
             'totalProfit' => $totalProfit,
         ]);
     }

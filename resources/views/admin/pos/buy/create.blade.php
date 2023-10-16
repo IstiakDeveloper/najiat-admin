@@ -17,6 +17,14 @@
             @enderror
         </div>
         <div class="mb-4">
+            <label for="from" class="block text-gray-700 text-sm font-bold mb-2">From:</label>
+            <input type="text" name="from" id="from" class="border rounded w-full text-gray-700"
+                placeholder="Enter the from">
+            @error('from')
+            <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+        </div>
+        <div class="mb-4">
             <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Amount:</label>
             <input type="number" name="amount" id="amount" class="border rounded w-full py-2 px-3 text-gray-700"
                 placeholder="Enter the amount">

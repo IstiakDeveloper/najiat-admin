@@ -19,6 +19,7 @@ class SellTransactionController extends Controller
     {
         $request->validate([
             'account_id' => 'required|exists:accounts,id',
+            'from' => 'required|min:0',
             'amount' => 'required|numeric|min:0',
         ]);
 
@@ -43,11 +44,12 @@ class SellTransactionController extends Controller
 
         // Create a sell transaction
         SellTransaction::create([
+            'from' => $request->from,
             'account_id' => $request->account_id,
             'amount' => $request->amount,
         ]);
 
-        return redirect()->route('financial-overview.index')->with('success', 'Sell transaction completed successfully.');
+        return redirect()->route('financial-overview')->with('success', 'Sell transaction completed successfully.');
     }
 
 

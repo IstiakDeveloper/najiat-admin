@@ -11,6 +11,7 @@ class SellTransaction extends Model
     protected $fillable = [
         'account_id',
         'amount',
+        'from',
     ];
 
     public function account()

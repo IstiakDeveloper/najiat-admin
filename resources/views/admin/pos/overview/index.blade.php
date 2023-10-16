@@ -117,6 +117,14 @@
                     <i class="fas fa-chart-bar text-2xl text-blue-800"></i>
                 </div>
                 <p class="text-3xl font-bold text-blue-800">{{ $totalBuy }}</p>
+                <ul>
+                    @php
+                      $todayBuy = $buy_transactions->sortByDesc('created_at')->take(3);
+                   @endphp
+                    @foreach ($todayBuy as $buy)
+                        <li class="text-green-800">{{ $buy->from }}: {{ $buy->amount }}</li>
+                    @endforeach
+                </ul>
             </div>
 
             <!-- Sell Amount Section -->
@@ -126,6 +134,14 @@
                     <i class="fas fa-chart-bar text-2xl text-red-800"></i>
                 </div>
                 <p class="text-3xl font-bold text-red-800">{{$totalSell}}</p>
+                <ul>
+                    @php
+                      $todaySell = $sell_transactions->sortByDesc('created_at')->take(3);
+                   @endphp
+                    @foreach ($todaySell as $sell)
+                        <li class="text-green-800">{{ $sell->from }}: {{ $sell->amount }}</li>
+                    @endforeach
+                </ul>
             </div>
 
 

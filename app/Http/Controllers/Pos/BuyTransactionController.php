@@ -19,6 +19,7 @@ class BuyTransactionController extends Controller
     {
         $request->validate([
             'account_id' => 'required|exists:accounts,id',
+            'from' => 'required|min:0',
             'amount' => 'required|numeric|min:0',
         ]);
 
@@ -36,10 +37,11 @@ class BuyTransactionController extends Controller
         // Create a buy transaction
         BuyTransaction::create([
             'account_id' => $request->account_id,
+            'from' => $request->from,
             'amount' => $request->amount,
         ]);
 
-        return redirect()->route('financial-overview.index')->with('success', 'Buy transaction completed successfully.');
+        return redirect()->route('financial-overview')->with('success', 'Buy transaction completed successfully.');
     }
 
 }
