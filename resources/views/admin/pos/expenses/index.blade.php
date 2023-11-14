@@ -5,17 +5,17 @@
     <h2 class="text-2xl mb-4">Expenses</h2>
     <div class="flex mb-4">
         <a href="{{ route('investments.index') }}" class="mr-4">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4 rounded">
                 <i class="fa fa-list"></i> Investments
             </button>
         </a>
         <a href="{{ route('expenses.index') }}" class="mr-4">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4 rounded">
                 <i class="fa fa-list"></i> Expenses
             </button>
         </a>
         <a href="{{ route('accounts.index') }}">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 mb-4 px-4 rounded">
                 <i class="fa fa-list"></i> Accounts
             </button>
         </a>

@@ -30,6 +30,19 @@ class ExpenseController extends Controller
             'account_id' => 'required|exists:accounts,id',
         ]);
 
+        // Fetch the selected account
+        $account = Account::findOrFail($request->account_id);
+
+        // Check if the account has sufficient balance for the expense
+        if ($account->balance < $request->amount) {
+            return redirect()->route('expenses.create')->with('error', 'Insufficient balance for the expense.');
+        }
+
+        // Deduct the expense amount from the account's balance
+        $account->balance -= $request->amount;
+        $account->save();
+
+        // Create a new expense record
         $expense = new Expense([
             'description' => $request->description,
             'amount' => $request->amount,
@@ -43,4 +56,5 @@ class ExpenseController extends Controller
 
         return redirect()->route('expenses.index')->with('success', 'Expense added successfully.');
     }
+
 }

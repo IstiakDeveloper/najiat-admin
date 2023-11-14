@@ -74,6 +74,25 @@ class AccountController extends Controller
         return redirect()->route('accounts.index');
     }
 
+    public function updateBalance($id)
+    {
+        $account = Account::findOrFail($id);
+        return view('admin.pos.accounts.update-balance', compact('account'));
+    }
+
+    public function saveBalance(Request $request, $id)
+    {
+        $account = Account::findOrFail($id);
+
+        $request->validate([
+            'balance' => 'required|numeric',
+        ]);
+
+        $account->balance = $request->balance;
+        $account->save();
+
+        return redirect()->route('accounts.index')->with('success', 'Account balance updated successfully.');
+    }
 
 
 

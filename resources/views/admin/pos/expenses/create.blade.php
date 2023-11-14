@@ -16,9 +16,11 @@
         <div class="mb-4">
             <label for="account_id" class="block text-gray-700">Account:</label>
             <select name="account_id" id="account_id" class="form-select mt-1 block w-full px-4 py-2" required>
+                <option value="" disabled selected>Select Account</option>
                 @foreach ($accounts as $account)
                     <option value="{{ $account->id }}">{{ $account->name }}</option>
                 @endforeach
+                <option value="add_new">Add New Account</option>
             </select>
         </div>
         <div class="mb-4">

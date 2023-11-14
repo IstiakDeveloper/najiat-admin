@@ -4,27 +4,27 @@
 <div class="container mx-auto p-6">
     <div class="mb-8">
         <h2 class="text-3xl font-bold mb-4 text-gray-800">Financial Overview</h2>
-        <div class="flex mb-4 justify-between">
+        <div class="flex mb-4 justify-between ">
             <div class="nav">
                 <a href="{{ route('investments.index') }}" class="mr-4">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4 rounded">
                         <i class="fa fa-list"></i> Investments
                     </button>
                 </a>
                 <a href="{{ route('expenses.index') }}" class="mr-4">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4 rounded">
                         <i class="fa fa-list"></i> Expenses
                     </button>
                 </a>
                 <a href="{{ route('accounts.index') }}">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white mb-4 font-bold py-2 px-4 rounded">
                         <i class="fa fa-list"></i> Accounts
                     </button>
                 </a>
             </div>
             <div class="buy-sell">
                 <a href="{{route('buy-transactions.create')}}" class="mr-4">
-                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    <button class="bg-green-500 hover:bg-green-700 text-white mb-4 font-bold py-2 px-4 rounded">
                         <i class="fa-solid fa-up-long"></i> Buy
                     </button>
                 </a>
