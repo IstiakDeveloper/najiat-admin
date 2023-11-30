@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\InvoicesExport;
 use App\Http\Controllers\Controller;
+use App\Imports\InvoicesImport;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
@@ -10,6 +12,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 
 class InvoiceController extends Controller
@@ -117,23 +120,34 @@ class InvoiceController extends Controller
             'net_profit' => $netProfit,
             'total_purchase_price' => $totalPurchase,  // Include total purchase price here
             'total_sale_price' => $totalSale,  // Include total sale price here
-            'delivery_status' => 'pending', // Default delivery status
+            'delivery_status' => 'Pending', // Default delivery status
             'note' => $request->note,
         ]);
 
-        // Create orders for each product
+
         foreach ($request->products as $productId => $productData) {
-            Order::create([
-                'customer_id' => $customer->id,
-                'invoice_id' => $invoice->id,
-                'product_id' => $productId,
-                'quantity' => $productData['quantity'],
-                'discount' => $request->discount,
-                'delivery_charge' => $request->delivery_charge,
-                'total_amount' => $productData['quantity'] * $product->sale_price - $productData['quantity'] * $product->purchase_price,
-                'total' => $productData['quantity'] * $product->sale_price + $request->delivery_charge + $codCharge,
-            ]);
+            $quantity = $productData['quantity'];
+            $product = Product::find($productId);
+
+            if ($product) {
+                // Create an order for each product in the invoice
+                Order::create([
+                    'customer_id' => $customer->id,
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                    'discount' => $request->discount,
+                    'delivery_charge' => $request->delivery_charge,
+                    'total_amount' => $quantity * $product->sale_price - $quantity * $product->purchase_price,
+                    'total' => $quantity * $product->sale_price + $request->delivery_charge + $codCharge,
+                ]);
+
+                if ($product->stock_quantity >= $quantity) {
+                    $product->decrement('stock_quantity', $quantity);
+                }
+            }
         }
+
 
         // Redirect to the invoice show page with a success message
         return redirect()->route('invoices.show', $invoice)
@@ -203,7 +217,6 @@ class InvoiceController extends Controller
             'phone_number' => 'required|unique:customers,phone_number,' . $invoice->customer_id,
             'customer_address' => 'required',
             'products' => 'required|array|min:1'
-
         ]);
 
         // Update the customer data
@@ -213,39 +226,39 @@ class InvoiceController extends Controller
             'address' => $request->input('customer_address'),
         ]);
 
-        // Update the invoice data based on delivery status
-        $deliveryStatus = $request->input('delivery_status');
-
-        if ($deliveryStatus === 'delivered' || $deliveryStatus === 'canceled') {
-            // Set purchase and sale prices to 0 for delivered or canceled status
-            $totalSale = 0;
-            $totalPurchase = 0;
-        } else {
-            // Calculate total sale and purchase based on product prices
-            $totalSale = 0;
-            $totalPurchase = 0;
-
-            foreach ($request->products as $productId => $productData) {
-                $quantity = $productData['quantity'];
-                $product = Product::find($productId);
-
-                if ($product) {
-                    $totalSale += $product->sale_price * $quantity;
-                    $totalPurchase += $product->purchase_price * $quantity;
-                }
-            }
-        }
-
         // Update the invoice data
         $invoice->update([
             'discount' => $request->input('discount') ?? 0,
             'delivery_charge' => $request->input('delivery_charge') ?? 0,
-            'total_sale' => $totalSale,
-            'total_purchase' => $totalPurchase,
-            'delivery_status' => $deliveryStatus,
         ]);
 
-        // Rest of the logic to handle orders and calculations remains unchanged
+        // Update or create orders based on the provided products
+        foreach ($request->input('products') as $productData) {
+            // Check if the 'product_id' key exists in the $productData array
+            if (!isset($productData['product_id'])) {
+                // Handle the missing 'product_id' key (e.g., log an error, skip the product, etc.)
+                continue;
+            }
+
+            $product = Product::find($productData['product_id']);
+
+            if ($product) {
+                // Update or create the order for the product
+                $order = Order::updateOrCreate(
+                    [
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $product->id,
+                    ],
+                    [
+                        'quantity' => $productData['quantity'],
+                        // Add any other order-related fields here
+                    ]
+                );
+            }
+        }
+
+
+        // Perform any additional calculations or logic for the update
 
         // Redirect to the invoice show page with a success message
         return redirect()->route('invoices.show', $invoice)
@@ -305,6 +318,11 @@ class InvoiceController extends Controller
         return response()->download($pdfPath . $pdfFileName, $pdfFileName, $headers);
     }
 
+    public function export()
+    {
+        return Excel::download(new InvoicesExport, 'invoices.csv');
+    }
+
 
     public function destroy(Invoice $invoice)
     {
@@ -313,4 +331,64 @@ class InvoiceController extends Controller
 
         return redirect()->route('invoices.index')->with('success', 'Invoice deleted successfully.');
     }
+
+    public function importForm()
+    {
+        return view('admin.invoices.import');
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt',
+        ]);
+
+        $file = $request->file('file');
+
+        Excel::import(new InvoicesImport, $file);
+
+        return redirect()->back()->with('success', 'Invoices imported successfully.');
+    }
+
+    public function editStatus(Invoice $invoice)
+    {
+        return view('admin.invoices.edit-status', compact('invoice'));
+    }
+
+
+    public function updateStatus(Request $request, Invoice $invoice)
+    {
+        $request->validate([
+            'delivery_status' => 'required|in:Pending,Complete,Cancel',
+        ]);
+
+        // Check if the status is being updated to cancel
+        if ($request->delivery_status === 'Cancel') {
+            // If canceled, loop through orders and update product stock_quantity
+            foreach ($invoice->orders as $order) {
+                $product = $order->product;
+
+                // Increment the stock_quantity with the order quantity
+                $product->increment('stock_quantity', $order->quantity);
+            }
+
+            // Set specific fields to 0 in the invoice
+            $invoice->update([
+                'discount' => 0,
+                'total_expense' => 0,
+                'total_sale' => 0,
+                'net_profit' => 0,
+                'total_purchase_price' => 0,
+                'total_sale_price' => 0,
+            ]);
+        }
+
+        // Update the delivery status of the invoice
+        $invoice->update([
+            'delivery_status' => $request->delivery_status,
+        ]);
+
+        return redirect()->route('invoices.index')
+            ->with('success', 'Invoice status and delivery status updated successfully.');
+    }
+
 }

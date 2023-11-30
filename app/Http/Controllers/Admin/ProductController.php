@@ -56,6 +56,7 @@ class ProductController extends Controller
             'purchase_price' => $validatedData['purchase_price'],
             'regular_price' => $validatedData['regular_price'],
             'sale_price' => $validatedData['sale_price'],
+            'stock_quantity' => 0,
         ]);
 
         if ($request->hasFile('image')) {
@@ -131,6 +132,7 @@ class ProductController extends Controller
         $product->purchase_price = $validatedData['purchase_price'];
         $product->regular_price = $validatedData['regular_price'];
         $product->sale_price = $validatedData['sale_price'];
+
 
         if ($request->hasFile('image')) {
             // Handle main image upload

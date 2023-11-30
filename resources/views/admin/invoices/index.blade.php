@@ -2,7 +2,15 @@
 
 @section('content')
 <div class="container mx-auto">
-    <h1 class="text-2xl font-semibold mb-4">Invoices</h1>
+    <div class="flex justify-between mb-4">
+        <div>
+            <h1 class="text-2xl font-semibold mb-4">Invoices</h1>
+        </div>
+        <div>
+            <a href="{{ route('export.invoices') }}" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Export invoice</a>
+            <a href="{{ route('import.invoices.form') }}" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">Import Invoices</a>
+        </div>
+    </div>
     @php
         $totalExpenseSum = $invoices->sum('total_expense');
         $totalSaleSum = $invoices->sum('total_sale');
@@ -48,7 +56,15 @@
             <tbody>
                 @foreach ($invoices as $invoice)
                     @foreach ($invoice->orders as $index => $order)
-                        <tr class="hover:bg-gray-50 transition border-t border-gray-200">
+                    @php
+                    $rowClass = 'hover:bg-gray-50 transition border-t border-gray-200';
+                    if ($invoice->delivery_status === 'Cancel') {
+                        $rowClass .= ' bg-red-100'; // Set red background for canceled status
+                    } elseif ($invoice->delivery_status === 'Complete') {
+                        $rowClass .= ' bg-green-100'; // Set green background for completed status
+                    }
+                @endphp
+                    <tr class="{{ $rowClass }}">
                             @if ($index === 0)
                                 <td rowspan="{{ count($invoice->orders) }}" class="py-2 px-4">{{ $invoice->invoice_number }}</td>
                             @endif
@@ -68,6 +84,11 @@
                                 <td rowspan="{{ count($invoice->orders) }}" class="py-2 px-4">{{ $invoice->delivery_status }}</td>
                                 <!-- Actions -->
                                 <td rowspan="{{ count($invoice->orders) }}" class="py-2">
+                                    @if ($invoice->delivery_status !== 'Cancel')
+                                        <a href="{{ route('invoices.editStatus', $invoice) }}" class="text-green-500 hover:text-green-700 mr-2">
+                                            <i class="fa-solid fa-repeat"></i>
+                                        </a>
+                                    @endif
                                     <a href="{{ route('invoices.edit', $invoice) }}" class="text-blue-500 hover:text-blue-700 mr-2">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -90,4 +111,11 @@
         </table>
     </div>
 </div>
+
+
+
+
+
 @endsection
+
+

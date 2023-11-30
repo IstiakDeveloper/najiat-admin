@@ -53,6 +53,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('invoices', InvoiceController::class);
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+    Route::get('/export-invoices', [InvoiceController::class, 'export'])->name('export.invoices');
+    Route::get('/import-invoices', [InvoiceController::class, 'importForm'])->name('import.invoices.form');
+    Route::post('/import-invoices', [InvoiceController::class, 'import'])->name('import.invoices');
+    Route::get('/invoices/{invoice}/edit-status', [InvoiceController::class, 'editStatus'])->name('invoices.editStatus');
+    Route::post('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
+
+
     Route::resource('orders', OrderController::class);
 
     Route::resource('investments', InvestmentController::class);
@@ -61,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/accounts/recharge', [AccountController::class, 'recharge'])
     ->name('accounts.recharge');
     Route::post('/accounts/{account}/save-balance', [AccountController::class, 'saveBalance'])->name('accounts.save-balance');
-    
+
 
     Route::get('financial-overview', [FinancialOverviewController::class, 'index'])->name('financial-overview');
     Route::get('/financial-overview-filter', [FinancialOverviewController::class, 'indexWithFilter'])->name('financial-overview.index');

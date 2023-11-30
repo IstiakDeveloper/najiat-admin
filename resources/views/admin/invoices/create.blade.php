@@ -32,7 +32,7 @@
                 <select id="products" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="">Select Product</option>
                     @foreach ($products as $product)
-                        <option value="{{ $product->id }}">{{ $product->name }}</option>
+                        <option value="{{ $product->id }}">{{ $product->name }} <span class="bg-red-100">{{$product->stock_quantity}}</span></option>
                     @endforeach
                 </select>
                 <div id="productQuantities" class="mt-4"></div>

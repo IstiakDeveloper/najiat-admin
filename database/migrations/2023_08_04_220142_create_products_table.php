@@ -19,8 +19,10 @@ return new class extends Migration
             $table->string('image'); // Assuming a path to the main image
             $table->json('image_gallery')->nullable(); // JSON column for image gallery
             $table->string('author');
+            $table->decimal('purchase_price', 10, 2)->nullable();
             $table->decimal('regular_price', 10, 2)->nullable();
             $table->decimal('sale_price', 10, 2)->nullable();
+            $table->unsignedInteger('stock_quantity');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();

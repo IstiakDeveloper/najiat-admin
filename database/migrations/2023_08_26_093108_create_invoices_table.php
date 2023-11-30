@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('total_expense', 10, 2)->default(0);
             $table->decimal('total_sale', 10, 2)->default(0);
             $table->decimal('net_profit', 10, 2)->default(0);
-            $table->string('delivery_status')->default('pending');
+            $table->string('delivery_status');
             $table->timestamps();
 
             // Create foreign key relationship with customers table

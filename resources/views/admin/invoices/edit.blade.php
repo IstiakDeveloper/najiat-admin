@@ -64,14 +64,7 @@
                     <input type="text" name="delivery_charge" id="delivery_charge" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" value="{{ $invoice->delivery_charge }}">
                 </div>
 
-                <div class="col-span-1">
-                    <label for="delivery_status" class="block text-sm font-medium text-gray-700">Delivery Status</label>
-                    <select name="delivery_status" id="delivery_status" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                        <option value="pending">Pending</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="canceled">Canceled</option>
-                    </select>
-                </div>
+
             </div>
         </div>
 
