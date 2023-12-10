@@ -89,5 +89,17 @@
             </div>
             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Create Product</button>
         </form>
+        @if ($errors->any())
+        <div class="mt-4">
+            <div class="text-red-500 text-sm">
+                Please correct the following errors:
+            </div>
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     </div>
 @endsection

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Bookshop</title>
+    <title>An-Najiat | Online Bookshop</title>
     <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
@@ -103,6 +103,23 @@
             background-color: #393280; /* Primary Color */
             color: #fff;
         }
+        #cartIcon {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background: purple;
+            padding: 10px;
+            z-index: 999;
+        }
+
+        #cartIcon:hover {
+            background-color: #1a365d; /* Change the background color on hover */
+        }
+        #cartIcon i{
+            font-size: 30px;
+        }
     </style>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
@@ -114,12 +131,12 @@
     <div class="top-bar p-2">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Contact Info -->
-            <p class="text-gray-700">Contact: info@example.com</p>
+            <p class="text-gray-700">Contact: <a href="mailto:najiat.com@gmail.com">najiat.com@gmail.com</a></p>
 
             <!-- User Actions (Login/Signup, Profile) -->
             <div class="flex items-center space-x-4">
-                <a href="#" class="text-gray-700">Login</a>
-                <a href="#" class="text-gray-700">Signup</a>
+                <a href="{{route('login')}}" class="text-gray-700">Login</a>
+                <a href="{{route('register')}}" class="text-gray-700">Signup</a>
                 <a href="#" class="text-gray-700">
                     <i class="fas fa-user"></i>
                 </a>
@@ -131,15 +148,15 @@
     <nav class="bg-primary p-4">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo -->
-            <a href="#" class="flex items-center text-white text-2xl font-bold logo focus:text-white focus:outline-none">
+            <a href="/" class="flex items-center text-white text-2xl font-bold logo focus:text-white focus:outline-none">
                 <img src="{{asset('logo.png')}}" alt="Najiat.com" class="h-12 mr-2 p-2 bg-gray-50 rounded-full ">
                 Najiat.com
             </a>
 
             <!-- Search Bar -->
-            <div class="search-bar">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" placeholder="Search..." class="search-input">
+            <div class="search-bar relative">
+                <i id="searchIcon" class="fas fa-search search-icon"></i>
+                <input id="searchInput" type="text" placeholder="Search..." class="search-input hidden md:inline-block">
             </div>
 
             <!-- Responsive Navigation -->
@@ -151,14 +168,14 @@
 
             <!-- Navigation Links with Icons -->
             <div class="hidden lg:flex space-x-4 items-center">
-                <a href="#" class="text-white flex items-center">
+                <a href="/" class="text-white flex items-center">
                     <i class="fas fa-home mr-2"></i> Home
                 </a>
                 <a href="#" class="text-white flex items-center">
                     <i class="fas fa-book mr-2"></i> Books
                 </a>
-                <!-- Add more navigation links with icons as needed -->
             </div>
+
         </div>
     </nav>
 
@@ -176,7 +193,7 @@
             <a href="#" class="text-white py-2 hover:bg-secondary flex items-center">
                 <i class="fas fa-book mr-2"></i> Books
             </a>
-            <!-- Add more navigation links with icons as needed -->
+
         </div>
 
         <!-- Contact Info and User Actions (Mobile) -->
@@ -191,11 +208,14 @@
     </div>
 
     <!-- Content Section -->
-    <main class="container mx-auto my-8 rounded-md">
+    <main class="container mx-auto my-8 rounded-md px-8">
         <!-- Your content goes here -->
-        @yield('content')
+        {{ $slot }}
     </main>
 
+    <div id="cartIcon" class="text-white flex items-center relative">
+        @livewire('cart-icon')
+    </div>
     <!-- Footer -->
     <footer class="bg-primary text-white p-4 mt-auto">
         <div class="container mx-auto text-center">
@@ -222,8 +242,15 @@
                 document.getElementById('mobileMenu').classList.add('hidden');
             }
         });
-    </script>
 
+        const searchIcon = document.getElementById('searchIcon');
+        const searchInput = document.getElementById('searchInput');
+
+        searchIcon.addEventListener('click', function () {
+            searchInput.classList.toggle('hidden');
+            searchInput.focus(); // Focus on the input when it becomes visible
+        });
+    </script>
 
     @livewireScripts
 </body>

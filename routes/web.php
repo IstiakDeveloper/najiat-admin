@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Categoryy;
+use App\Livewire\ThankYou;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -14,6 +16,11 @@ use App\Http\Controllers\Pos\FinancialOverviewController;
 use App\Http\Controllers\Pos\InvestmentController;
 use App\Http\Controllers\Pos\SellTransactionController;
 use App\Http\Controllers\Pos\TransactionController;
+use App\Http\Livewire\AddressForm;
+use App\Livewire\Cart;
+use App\Livewire\Category;
+use App\Livewire\Home;
+use App\Livewire\ProductDetail;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +33,14 @@ use App\Http\Controllers\Pos\TransactionController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', Home::class)->name('home');
+Route::get('/product/{productId}', ProductDetail::class)->name('product.detail');
+Route::get('/category/{categoryId}', Categoryy::class)->name('category.show');
+Route::get('/cart', Cart::class)->name('cart.index');
+Route::get('/thank-you', ThankYou::class)->name('thank-you');
+
+
+
 
 Route::get('/products', function () {
     return view('products');

@@ -215,5 +215,6 @@
         return window.location.pathname.includes(route);
     }
 </script>
+
 </body>
 </html>
