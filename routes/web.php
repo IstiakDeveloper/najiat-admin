@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/import-invoices', [InvoiceController::class, 'import'])->name('import.invoices');
     Route::get('/invoices/{invoice}/edit-status', [InvoiceController::class, 'editStatus'])->name('invoices.editStatus');
     Route::post('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
+    Route::post('/admin/invoices/push-to-steadfast/{invoice}', [InvoiceController::class, 'pushToSteadfast'])->name('invoices.pushToSteadfast');
+
 
 
     Route::resource('orders', OrderController::class);

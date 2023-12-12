@@ -59,19 +59,19 @@
 
 
             @if($showAddressForm)
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center" >
-                <div class="bg-white p-6 rounded-md relative" >
-                    <!-- Close button in the top-right corner -->
-                    <button wire:click="closeOutsideModal" class="absolute top-2 right-2 text-gray-500 hover:text-red-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center" >
+                    <div class="bg-white p-6 rounded-md relative" >
+                        <!-- Close button in the top-right corner -->
+                        <button wire:click="closeOutsideModal" class="absolute top-2 right-2 text-gray-500 hover:text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
 
-                    <livewire:address-form-component :cart="$cart" />
+                        <livewire:address-form-component :cart="$cart" />
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
 
             @if(!$showAddressForm)
                 <div class="flex space-x-4">

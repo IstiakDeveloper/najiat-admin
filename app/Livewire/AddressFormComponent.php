@@ -19,6 +19,7 @@ class AddressFormComponent extends Component
     public $deliveryCharge;
     public $totalPrice = 0;
 
+
     protected $listeners = ['totalPriceUpdated' => 'updateTotalPrice'];
 
 
@@ -75,7 +76,7 @@ class AddressFormComponent extends Component
         $this->validate([
             'deliveryOption' => 'required',
             'name' => 'required',
-            'phone' => 'required',
+            'phone' => 'required|numeric|digits:11',
             'address' => 'required',
         ]);
         // Create a new customer or find an existing one based on the phone number
@@ -162,6 +163,31 @@ class AddressFormComponent extends Component
 
         return Redirect::route('home')->with('success', 'Your order is placed.');
     }
+
+        public function orderNow($productId)
+        {
+            $product = Product::find($productId);
+
+            // Check if the product exists
+            if ($product) {
+                // Assume quantity is 1 for the order now functionality
+                $quantity = 1;
+
+                // Update cart with the selected product
+                $this->cart = [
+                    'id' => $product->id,
+                    'quantity' => $quantity,
+                    'sale_price' => $product->sale_price,
+                    // Add other necessary information about the product
+                ];
+
+                // Calculate delivery charge and update total price
+                $this->deliveryChargeUpdateFunction();
+
+                // Place the order using the existing placeOrder method
+                $this->placeOrder();
+            }
+        }
 
     public function updateTotalPrice($totalPrice)
     {

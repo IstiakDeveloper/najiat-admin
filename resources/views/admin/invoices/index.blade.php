@@ -102,6 +102,11 @@
                                     <a href="{{ route('invoices.show', $invoice) }}" class="text-green-500 hover:text-green-700 ml-2">
                                         <i class="fas fa-eye"></i>
                                     </a>
+
+                                    <form method="post" action="{{ route('invoices.pushToSteadfast', $invoice) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">Push to Steadfast</button>
+                                    </form>
                                 </td>
                             @endif
                         </tr>

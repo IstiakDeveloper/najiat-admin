@@ -8,6 +8,8 @@ use Livewire\Component;
 
 class Home extends Component
 {
+
+    public $showAddressForm = false;
     public function render()
     {
         $categories = Category::all();
@@ -16,7 +18,7 @@ class Home extends Component
         return view('livewire.home', [
             'products' => $products,
             'categories'=> $categories,
-    ]);
+        ]);
     }
     public $cart = [];
 
@@ -70,5 +72,14 @@ class Home extends Component
         return false;
     }
 
+    public function toggleModal()
+    {
+        $this->showAddressForm = !$this->showAddressForm;
+    }
+
+    public function orderNow()
+    {
+        $this->toggleModal();
+    }
 
 }

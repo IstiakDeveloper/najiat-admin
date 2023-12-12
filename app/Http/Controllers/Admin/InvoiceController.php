@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
+use App\Services\SteadfastService;
 
 class InvoiceController extends Controller
 {
@@ -390,5 +391,43 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice status and delivery status updated successfully.');
     }
+
+
+    public function pushToSteadfast(Invoice $invoice)
+    {
+        try {
+            $productDetails = $invoice->orders->map(function ($order) {
+                return $order->product->name . ' (' . $order->quantity . ')';
+            })->implode(', ');
+            $invoiceData = [
+                'invoice' => $invoice->invoice_number,
+                'recipient_name' => $invoice->customer->name,
+                'recipient_phone' => $invoice->customer->phone_number,
+                'recipient_address' => $invoice->customer->address,
+                'cod_amount' => $invoice->total_sale,
+                'note' => 'Products: ' . $productDetails,
+            ];
+
+            // Create an instance of SteadfastService
+            $steadfastService = new SteadfastService();
+
+            // Call the method to place the order in Steadfast
+            $response = $steadfastService->placeOrder($invoiceData);
+
+            // Check if the 'message' key exists in the response
+            $message = isset($response['message']) ? $response['message'] : 'Order pushed to Steadfast successfully.';
+
+            // Directly display the response message
+            return redirect()->route('invoices.index')->with('message', $message);
+        } catch (\Exception $e) {
+            // Handle general exception, log, etc.
+            \Log::error('Error pushing order to Steadfast: ' . $e->getMessage());
+
+            // Redirect with an error message
+            return redirect()->route('invoices.index')->with('error', 'An unexpected error occurred.');
+        }
+    }
+
+
 
 }
