@@ -31,20 +31,27 @@ class InvoiceController extends Controller
     }
 
     public function generateInvoiceNumber() {
-        $lastInvoice = Invoice::latest()->first();
+        // Get the last invoice with a number like INV-XXXX
+        $lastInvoice = Invoice::where('invoice_number', 'like', 'INV-%')->latest()->first();
 
         if ($lastInvoice) {
             $lastInvoiceNumber = $lastInvoice->invoice_number;
             $lastSerialNumber = intval(substr($lastInvoiceNumber, -4));
             $newSerialNumber = $lastSerialNumber + 1;
         } else {
-            $newSerialNumber = 1;
+            // If there is no last invoice, start with 528
+            $newSerialNumber = 529;
         }
 
+        // Ensure the new serial number is at least 528
+        $newSerialNumber = max($newSerialNumber, 529);
+
+        // Format the new invoice number
         $newInvoiceNumber = 'INV-' . str_pad($newSerialNumber, 4, '0', STR_PAD_LEFT);
 
         return $newInvoiceNumber;
     }
+
 
     public function create()
     {

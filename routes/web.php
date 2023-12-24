@@ -17,6 +17,7 @@ use App\Http\Controllers\Pos\InvestmentController;
 use App\Http\Controllers\Pos\SellTransactionController;
 use App\Http\Controllers\Pos\TransactionController;
 use App\Http\Livewire\AddressForm;
+use App\Livewire\BookComponent;
 use App\Livewire\Cart;
 use App\Livewire\Category;
 use App\Livewire\Home;
@@ -35,6 +36,7 @@ use App\Livewire\ProductDetail;
 
 Route::get('/', Home::class)->name('home');
 Route::get('/product/{productId}', ProductDetail::class)->name('product.detail');
+Route::get('/books', BookComponent::class)->name('books');
 Route::get('/category/{categoryId}', Categoryy::class)->name('category.show');
 Route::get('/cart', Cart::class)->name('cart.index');
 Route::get('/thank-you', ThankYou::class)->name('thank-you');

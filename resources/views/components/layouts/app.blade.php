@@ -9,6 +9,10 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" /> --}}
+    <!-- Add these lines to your HTML head section -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+
     @livewireStyles
 
     <!-- Your custom styles go here -->
@@ -121,7 +125,6 @@
             font-size: 30px;
         }
     </style>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
 </head>
 
@@ -171,7 +174,7 @@
                 <a href="/" class="text-white flex items-center">
                     <i class="fas fa-home mr-2"></i> Home
                 </a>
-                <a href="#" class="text-white flex items-center">
+                <a href="{{route('books')}}" class="text-white flex items-center">
                     <i class="fas fa-book mr-2"></i> Books
                 </a>
             </div>
@@ -220,7 +223,7 @@
     <footer class="bg-primary text-white p-4 mt-auto">
         <div class="container mx-auto text-center">
             <!-- Your footer content goes here -->
-            <p>&copy; 2023 Your Bookshop. All rights reserved.</p>
+            <p>&copy; 2023 An-Najiat | All rights reserved.</p>
         </div>
     </footer>
 
@@ -250,7 +253,9 @@
             searchInput.classList.toggle('hidden');
             searchInput.focus(); // Focus on the input when it becomes visible
         });
+
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide"></script>
 
     @livewireScripts
 </body>

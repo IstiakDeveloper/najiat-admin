@@ -9,7 +9,9 @@ use Livewire\Component;
 class Home extends Component
 {
 
-    public $showAddressForm = false;
+    public $showOrderForm = false;
+    public $selectedProduct;
+    public $selectedQuantity;
     public function render()
     {
         $categories = Category::all();
@@ -72,14 +74,31 @@ class Home extends Component
         return false;
     }
 
-    public function toggleModal()
+    public function toggleModal($productId, $quantity = 1)
     {
-        $this->showAddressForm = !$this->showAddressForm;
+        $product = Product::find($productId);
+
+        if ($product) {
+            $this->selectedProduct = $product;
+            $this->selectedQuantity = $quantity; // Assuming you have a property like $selectedQuantity in your component
+            $this->showOrderForm = true;
+            $this->dispatch('productSelected', [
+                'product' => $this->selectedProduct,
+                'quantity' => $this->selectedQuantity,
+            ]);
+
+        }
+    }
+    public function closeOutsideModal()
+    {
+        // Close the modal when clicking outside
+        $this->showOrderForm = false;
     }
 
-    public function orderNow()
-    {
-        $this->toggleModal();
-    }
+
+
+
+
+
 
 }
