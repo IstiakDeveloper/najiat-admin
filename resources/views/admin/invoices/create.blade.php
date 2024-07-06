@@ -22,6 +22,10 @@
                     <label for="customer_address" class="block text-sm font-medium text-gray-700">Customer Address</label>
                     <textarea name="customer_address" id="customer_address" rows="3" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required></textarea>
                 </div>
+                <div class="col-span-1">
+                    <label for="note" class="block text-sm font-medium text-gray-700">Note</label>
+                    <textarea name="note" id="note" rows="3" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required></textarea>
+                </div>
             </div>
         </div>
 
@@ -31,6 +35,7 @@
                 <label for="products" class="block text-sm font-medium text-gray-700">Select Products</label>
                 <select id="products" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="">Select Product</option>
+                    <option value="search" disabled>──────────</option>
                     @foreach ($products as $product)
                         <option value="{{ $product->id }}">{{ $product->name }} <span class="bg-red-100">{{$product->stock_quantity}}</span></option>
                     @endforeach
@@ -47,7 +52,13 @@
                     <input type="text" name="discount" id="discount" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
                 <div class="col-span-1">
-                    <label for="delivery_charge" class="block text-sm font-medium text-gray-700">Delivery Charge</label>
+                    <label for="delivery_system" class="block text-sm font-medium text-gray-700">Delivery System</label>
+                    <select name="delivery_system" id="delivery_system" onchange="updateDeliveryCharge(this)" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        <option value="">Select Product</option>
+                        <option value="Sundarban Quriyar (Office)" data-delivery-charge="40">Sundarban Quriyar (Office)</option>
+                        <option value="Home Delivery" data-delivery-charge="90">Home Delivery</option>
+                    </select>
+
                     <input type="text" name="delivery_charge" id="delivery_charge" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
             </div>
@@ -73,6 +84,38 @@
 </div>
 
 <script>
+     document.addEventListener('DOMContentLoaded', function () {
+        const productSearchInput = document.getElementById('productSearch');
+        const productsSelect = document.getElementById('products');
+
+        // Store original options
+        const originalOptions = Array.from(productsSelect.options);
+
+        // Add event listener to the search input
+        productSearchInput.addEventListener('input', function () {
+            const searchTerm = productSearchInput.value.toLowerCase();
+
+            // Filter options based on the search term
+            const filteredOptions = originalOptions.filter(option => option.text.toLowerCase().includes(searchTerm));
+
+            // Clear and update options in the select element
+            productsSelect.innerHTML = '<option value="">Select Product</option>';
+            filteredOptions.forEach(option => {
+                productsSelect.appendChild(option.cloneNode(true));
+            });
+        });
+    });
+
+    function updateDeliveryCharge(select) {
+            var deliveryChargeInput = document.getElementById('delivery_charge');
+
+            var selectedOption = select.options[select.selectedIndex];
+            var deliveryCharge = selectedOption.getAttribute('data-delivery-charge');
+
+            deliveryChargeInput.value = deliveryCharge;
+        }
+
+
     document.addEventListener("DOMContentLoaded", function() {
     const productsSelect = document.getElementById("products");
     const productQuantitiesContainer = document.getElementById("productQuantities");

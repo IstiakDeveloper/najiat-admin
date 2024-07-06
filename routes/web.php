@@ -53,6 +53,15 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
+Route::group(['api'], function () {
+    Route::resource('products', ProductController::class)->except([
+        'create', 'edit'
+    ]);
+
+    Route::resource('categories', CategoryController::class)->except([
+        'create', 'edit'
+    ]);
+});
 
 
 
@@ -73,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices/{invoice}/edit-status', [InvoiceController::class, 'editStatus'])->name('invoices.editStatus');
     Route::post('/invoices/{invoice}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
     Route::post('/admin/invoices/push-to-steadfast/{invoice}', [InvoiceController::class, 'pushToSteadfast'])->name('invoices.pushToSteadfast');
+
 
 
 

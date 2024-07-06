@@ -131,11 +131,12 @@ public function placeOrder(Product $product)
             'delivery_charge' => $this->deliveryCharge ?? 0,
             'total_expense' => $totalExpense,
             'total_sale' => $totalSaleWithDiscount,
+            'delivery_system' => $this->deliveryOption,
             'net_profit' => $netProfit,
             'total_purchase_price' => $totalPurchase,
             'total_sale_price' => $totalSale,
-            'delivery_status' => 'Pending',
-            'note' => 'hello',
+            'delivery_status' => 'Review',
+            'note' => 'Website',
         ]);
 
 

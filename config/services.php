@@ -32,9 +32,9 @@ return [
     ],
 
     'steadfast' => [
-        'base_url' => env('STEADFAST_API_BASE_URL'),
         'api_key' => env('STEADFAST_API_KEY'),
         'secret_key' => env('STEADFAST_SECRET_KEY'),
+        'base_url' => env('STEADFAST_API_BASE_URL'),
     ],
 
 ];

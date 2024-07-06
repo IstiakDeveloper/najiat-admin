@@ -58,15 +58,15 @@
                     <p class="text-lg font-semibold text-gray-800">Product: {{ $order->product->name }}</p>
                     <p class="text-sm text-gray-600">Quantity: {{ $order->quantity }}</p>
                     <p class="text-sm text-gray-600">Sale Price: ৳{{ $order->product->sale_price }}</p>
-                    <p class="text-sm text-gray-600">Discount: ৳{{ $order->invoice->discount }}</p>
                     @php
-                        $subTotal = $order->product->sale_price * $order->quantity - $order->invoice->discount;
+                        $subTotal = $order->product->sale_price * $order->quantity;
                     @endphp
                     <p class="text-sm text-gray-600">Sub-Total: ৳{{$subTotal}}</p>
                     <!-- Add more product details as needed -->
                 </div>
             @endforeach
             <p class="text-sm text-gray-600">Delivery Charge: ৳{{ $order->invoice->delivery_charge }}</p>
+            <p class="text-sm text-gray-600">Discount: ৳{{ $order->invoice->discount }}</p>
         </div>
 
     </div>
@@ -79,12 +79,13 @@
             <div class="px-4 py-6">
                 @php
                     // Calculate the total order amount without delivery charge
-                    $totalOrderAmount = $invoice->orders->sum(function($order) {
-                        return $order->product->sale_price * $order->quantity - $order->invoice->discount;
+                    $totalOAmount = $invoice->orders->sum(function($order) {
+                        return $order->product->sale_price * $order->quantity;
                     });
 
                     // Add the delivery charge once
-                    $totalOrderAmount += $invoice->delivery_charge;
+                    $totalOAmount += $invoice->delivery_charge;
+                    $totalOrderAmount = $totalOAmount - $order->invoice->discount
                 @endphp
 
                 <p class="text-lg font-semibold text-gray-800">Total: ৳{{ $totalOrderAmount }}</p>

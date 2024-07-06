@@ -12,7 +12,7 @@ class Invoice extends Model
     protected $fillable = [
         'invoice_number', 'customer_id', 'discount', 'delivery_charge', 'note',  'total_expense',
         'total_sale',
-        'net_profit', 'delivery_status',
+        'net_profit', 'delivery_status', 'delivery_system',
     ];
 
     public function customer()

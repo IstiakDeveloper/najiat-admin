@@ -34,13 +34,11 @@ class SteadfastService
             // You may want to log or handle the response data here
 
             return $responseData;
-        } catch (RequestException $e) {
+
+        }
+        catch (RequestException $e) {
             // Dump the detailed response for debugging purposes
-            dd([
-                'error' => true,
-                'message' => 'Failed to place the order with Steadfast API.',
-                'response' => $e->getResponse(), // This will contain detailed information about the error
-            ]);
+            dd($responseData);
 
             // Handle the exception, log, display a message, etc.
             // You can access the exception details using $e->getMessage(), $e->getCode(), etc.

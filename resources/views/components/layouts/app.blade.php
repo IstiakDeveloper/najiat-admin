@@ -125,6 +125,7 @@
             font-size: 30px;
         }
     </style>
+<!-- Meta Pixel Code -->
 
 </head>
 
@@ -201,9 +202,9 @@
 
         <!-- Contact Info and User Actions (Mobile) -->
         <div class="flex flex-col items-center mt-4">
-            <p class="text-white mb-2">Contact: info@example.com</p>
-            <a href="#" class="text-white mb-2">Login</a>
-            <a href="#" class="text-white mb-4">Signup</a>
+            <p class="text-white mb-2">Contact: najiat.com@gmail.com</p>
+            <a href="{{route('login')}}" class="text-gray-700">Login</a>
+            <a href="{{route('register')}}" class="text-gray-700">Signup</a>
             <a href="#" class="text-white">
                 <i class="fas fa-user"></i>
             </a>

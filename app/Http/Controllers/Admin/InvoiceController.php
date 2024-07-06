@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use App\Services\SteadfastService;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class InvoiceController extends Controller
 {
@@ -117,19 +119,22 @@ class InvoiceController extends Controller
         // Calculate net profit
         $netProfit = $totalSaleWithDiscount - $totalExpense;
 
+        $deliverySystem = $request->input('delivery_system');
+        $deliveryCharge = $request->input('delivery_charge');
         // Create the invoice with the calculated totals
         $invoice = Invoice::create([
             'invoice_number' => $this->generateInvoiceNumber(),
             'customer_id' => $customer->id,
             'discount' => $request->discount ?? 0,
-            'delivery_charge' => $request->delivery_charge ?? 0,
+            'delivery_charge' => $deliveryCharge ?? 0,
             'total_expense' => $totalExpense,
             'total_sale' => $totalSaleWithDiscount,  // Include delivery and discount here
             'net_profit' => $netProfit,
             'total_purchase_price' => $totalPurchase,  // Include total purchase price here
             'total_sale_price' => $totalSale,  // Include total sale price here
-            'delivery_status' => 'Pending', // Default delivery status
+            'delivery_status' => 'Review', // Default delivery status
             'note' => $request->note,
+            'delivery_system' => $deliverySystem,
         ]);
 
 
@@ -167,7 +172,10 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $invoices = Invoice::with('orders.product')->get();
+        // Retrieve invoices with related orders and products, paginate in reverse order
+        $invoices = Invoice::with('orders.product')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         // Initialize an array to store invoice data
         $invoiceData = [];
@@ -218,6 +226,7 @@ class InvoiceController extends Controller
         $customer = $invoice->customer;
         return view('admin.invoices.edit', compact('invoice', 'products', 'customer'));
     }
+
     public function update(Request $request, Invoice $invoice)
     {
         $request->validate([
@@ -234,37 +243,66 @@ class InvoiceController extends Controller
             'address' => $request->input('customer_address'),
         ]);
 
+        // Initialize variables to calculate totals
+        $totalSale = 0;
+        $totalPurchase = 0;
+
+
+        // Iterate over selected products
+        foreach ($request->products as $productId => $productData) {
+            $quantity = $productData['quantity'];
+            $product = Product::find($productId);
+
+            if ($product) {
+                // Fetch purchase_price and sale_price from the product
+                $purchasePrice = $product->purchase_price;
+                $salePrice = $product->sale_price;
+
+                // Calculate total sale and purchase based on quantity
+                $totalSale += $salePrice * $quantity;
+                $totalPurchase += $purchasePrice * $quantity;
+
+                $cashoutCharge = $totalPurchase * 0.015;
+                $codCharge = $totalSale * 0.01;
+
+                // Check if there's an existing order for this product in the invoice
+                $existingOrder = $invoice->orders()->where('product_id', $productId)->first();
+
+                if ($existingOrder) {
+                    // Update the existing order
+                    $existingOrder->update([
+                        'quantity' => $quantity,
+                        // Add any other order-related fields here
+                    ]);
+                } else {
+                    // Create a new order for the product
+                    Order::create([
+                        'customer_id' => $invoice->customer_id,
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $productId,
+                        'quantity' => $quantity,
+                        'discount' => $request->discount,
+                        'delivery_charge' => $request->delivery_charge,
+                        'total_amount' => $quantity * $product->sale_price - $quantity * $product->purchase_price,
+                        'total' => $quantity * $product->sale_price + $request->delivery_charge,
+                    ]);
+                }
+
+                if ($product->stock_quantity >= $quantity) {
+                    $product->decrement('stock_quantity', $quantity);
+                }
+            }
+        }
+
         // Update the invoice data
         $invoice->update([
             'discount' => $request->input('discount') ?? 0,
             'delivery_charge' => $request->input('delivery_charge') ?? 0,
+            'total_expense' => $totalPurchase + $cashoutCharge + $codCharge + $request->delivery_charge,
+            'total_sale' => $totalSale + $request->delivery_charge - ($request->discount ?? 0),
+            'net_profit' => ($totalSale + $request->delivery_charge - ($request->discount ?? 0)) - ($totalPurchase + $cashoutCharge + $codCharge + $request->delivery_charge),
+
         ]);
-
-        // Update or create orders based on the provided products
-        foreach ($request->input('products') as $productData) {
-            // Check if the 'product_id' key exists in the $productData array
-            if (!isset($productData['product_id'])) {
-                // Handle the missing 'product_id' key (e.g., log an error, skip the product, etc.)
-                continue;
-            }
-
-            $product = Product::find($productData['product_id']);
-
-            if ($product) {
-                // Update or create the order for the product
-                $order = Order::updateOrCreate(
-                    [
-                        'invoice_id' => $invoice->id,
-                        'product_id' => $product->id,
-                    ],
-                    [
-                        'quantity' => $productData['quantity'],
-                        // Add any other order-related fields here
-                    ]
-                );
-            }
-        }
-
 
         // Perform any additional calculations or logic for the update
 
@@ -272,6 +310,7 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Invoice updated successfully.');
     }
+
 
 
 
@@ -402,10 +441,13 @@ class InvoiceController extends Controller
 
     public function pushToSteadfast(Invoice $invoice)
     {
-        try {
+
+            // Retrieve product details
             $productDetails = $invoice->orders->map(function ($order) {
                 return $order->product->name . ' (' . $order->quantity . ')';
             })->implode(', ');
+
+            // Prepare data for Steadfast API
             $invoiceData = [
                 'invoice' => $invoice->invoice_number,
                 'recipient_name' => $invoice->customer->name,
@@ -415,25 +457,36 @@ class InvoiceController extends Controller
                 'note' => 'Products: ' . $productDetails,
             ];
 
-            // Create an instance of SteadfastService
-            $steadfastService = new SteadfastService();
+            // Create an instance of Guzzle client
+            $client = new \GuzzleHttp\Client([
+                'base_uri' => 'https://portal.steadfast.com.bd/api/v1',
+            ]);
 
-            // Call the method to place the order in Steadfast
-            $response = $steadfastService->placeOrder($invoiceData);
+            // Make the POST request to Steadfast API
+        // Make the POST request to Steadfast API
+        $response = $client->post('/api/v1/create_order', [
+            'headers' => [
+                'Api-Key' => 'egz1sbyus5o22omadxmqbgr5cchraoqa',
+                'Secret-Key' => '6tnvwudffsdxaupxc5vfszjo',
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $invoiceData,
+        ]);
 
-            // Check if the 'message' key exists in the response
-            $message = isset($response['message']) ? $response['message'] : 'Order pushed to Steadfast successfully.';
 
-            // Directly display the response message
-            return redirect()->route('invoices.index')->with('message', $message);
-        } catch (\Exception $e) {
-            // Handle general exception, log, etc.
-            \Log::error('Error pushing order to Steadfast: ' . $e->getMessage());
+            // Process the successful response as needed
+            $responseData = json_decode($response->getBody(), true);
 
-            // Redirect with an error message
-            return redirect()->route('invoices.index')->with('error', 'An unexpected error occurred.');
-        }
+
+            // Log the response
+            \Log::info('Steadfast API Response: ' . json_encode($responseData));
+            dd($responseData );
+            // Redirect back to the invoices index with a success message
+            return redirect()->route('invoices.index')->with('success', 'Order pushed to Steadfast successfully.');
+
     }
+
+
 
 
 

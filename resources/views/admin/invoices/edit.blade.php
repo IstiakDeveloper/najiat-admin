@@ -88,31 +88,43 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const productsSelect = document.getElementById("products");
-        const productQuantitiesContainer = document.getElementById("productQuantities");
+document.addEventListener("DOMContentLoaded", function() {
+    const productsSelect = document.getElementById("products");
+    const productQuantitiesContainer = document.getElementById("productQuantities");
 
-        productsSelect.addEventListener("change", function() {
-            const selectedProductId = productsSelect.value;
-            if (selectedProductId) {
-                const productQuantityDiv = document.createElement("div");
-                productQuantityDiv.classList.add("grid", "grid-cols-2", "gap-4", "mt-4");
+    productsSelect.addEventListener("change", function() {
+        const selectedProductId = productsSelect.value;
+        if (selectedProductId) {
+            const productQuantityDiv = document.createElement("div");
+            productQuantityDiv.classList.add("grid", "grid-cols-3", "gap-4", "mt-4");
 
-                const productLabel = document.createElement("span");
-                productLabel.textContent = `Selected Product: ${productsSelect.options[productsSelect.selectedIndex].text}`;
-                productQuantityDiv.appendChild(productLabel);
+            const productLabel = document.createElement("span");
+            productLabel.textContent = `Selected Product: ${productsSelect.options[productsSelect.selectedIndex].text}`;
+            productQuantityDiv.appendChild(productLabel);
 
-                const productQuantityInput = document.createElement("input");
-                productQuantityInput.type = "number"; // Change to number input for quantity
-                productQuantityInput.name = `products[${selectedProductId}][quantity]`; // Use array with 'quantity' key
-                productQuantityInput.value = 1;
-                productQuantityInput.placeholder = "Quantity";
-                productQuantityInput.classList.add("mt-1", "focus:ring-indigo-500", "focus:border-indigo-500", "block", "w-full", "py-2", "px-3", "border", "border-gray-300", "rounded-md", "shadow-sm", "sm:text-sm");
-                productQuantityDiv.appendChild(productQuantityInput);
+            const productQuantityInput = document.createElement("input");
+            productQuantityInput.type = "number";
+            productQuantityInput.name = `products[${selectedProductId}][quantity]`;
+            productQuantityInput.value = 1;
+            productQuantityInput.placeholder = "Quantity";
+            productQuantityInput.classList.add("mt-1", "focus:ring-indigo-500", "focus:border-indigo-500", "block", "w-full", "py-2", "px-3", "border", "border-gray-300", "rounded-md", "shadow-sm", "sm:text-sm");
+            productQuantityDiv.appendChild(productQuantityInput);
 
-                productQuantitiesContainer.appendChild(productQuantityDiv);
-            }
-        });
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.type = "button";
+            removeButton.classList.add("inline-flex", "items-center", "px-2", "py-1", "bg-red-500", "border", "border-transparent", "rounded-md", "font-semibold", "text-xs", "text-white", "uppercase", "tracking-widest", "hover:bg-red-600", "active:bg-red-700", "focus:outline-none", "focus:border-red-900", "focus:ring", "focus:ring-red-300", "disabled:opacity-25", "transition");
+
+            removeButton.addEventListener("click", function() {
+                productQuantityDiv.remove();
+            });
+
+            productQuantityDiv.appendChild(removeButton);
+
+            productQuantitiesContainer.appendChild(productQuantityDiv);
+        }
     });
+});
+
 </script>
 @endsection

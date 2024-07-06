@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number')->unique();
             $table->unsignedBigInteger('customer_id');
+            $table->string('delivery_system');
             $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('delivery_charge', 10, 2)->default(0);
-            $table->text('note')->nullable(); // Added note field
+            $table->text('note')->nullable();
             $table->decimal('total_expense', 10, 2)->default(0);
             $table->decimal('total_sale', 10, 2)->default(0);
             $table->decimal('net_profit', 10, 2)->default(0);

@@ -15,6 +15,10 @@
 
                     <p>Select the new status for this invoice:</p>
                     <div class="flex items-center">
+                        <input type="radio" id="statusReview" name="delivery_status" value="Review" {{ old('delivery_status', $invoice->delivery_status) === 'Review' ? 'checked' : '' }}>
+                        <label for="statusReview" class="ml-2">Review</label>
+                    </div>
+                    <div class="flex items-center">
                         <input type="radio" id="statusPending" name="delivery_status" value="Pending" {{ old('delivery_status', $invoice->delivery_status) === 'Pending' ? 'checked' : '' }}>
                         <label for="statusPending" class="ml-2">Pending</label>
                     </div>
